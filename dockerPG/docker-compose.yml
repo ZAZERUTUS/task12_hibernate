@@ -1,0 +1,58 @@
+version: "3.9"
+services:
+  postgres:
+    container_name: postgres_container
+    build:
+      context: ..
+      dockerfile: DockerfilePG
+    ports:
+      - "5445:5432"
+    networks:
+      - postgres
+
+#  tomcat:
+#    image: tomcat:10.0.18-jdk17-openjdk-slim-buster
+#    ports:
+#      - "8088:8080"
+#    volumes:
+#      - ../build/libs:/usr/local/tomcat/webapps
+#      - ../:/tests
+#    networks:
+#      - postgres
+
+  pgadmin:
+    container_name: pgadmin_container
+    image: dpage/pgadmin4:5.7
+    environment:
+      PGADMIN_DEFAULT_EMAIL: "admin@admin.ru"
+      PGADMIN_DEFAULT_PASSWORD: "admin"
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    #    volumes:
+    #      - ./pgadmin:/var/lib/pgadmin
+    ports:
+      - "5051:80"
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 1G
+    networks:
+      - postgres
+
+#  task_app:
+#    container_name: task_app
+#    restart: always
+#    build:
+#      context: ..
+#      dockerfile: Dockerfile
+#    volumes:
+#      - ../:/tests
+#    ports:
+#      - "7777:8080"
+#    networks:
+#      - postgres
+
+networks:
+  postgres:
+    driver: bridge
